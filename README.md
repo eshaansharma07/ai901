@@ -2,6 +2,8 @@
 
 EventIQ AI is a Next.js and MongoDB Atlas platform for discovering events, organizing them, registering for QR tickets, and checking attendees in. It includes a Gemini-powered event assistant, a location-aware finder, and an organizer planner.
 
+[Live EventIQ site](https://eventiq-ai-lyart.vercel.app/)
+
 ## Run locally
 
 1. Install Node.js 22 or later and run `npm ci`.
