@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { database } from '@/lib/db';
 import { sessionUser, unauthorized } from '@/lib/auth';
-import { accessibleListing, eventSchema, objectId } from '@/lib/common';
+import { accessibleListing, eventSchema, objectId, serializeEvent } from '@/lib/common';
 import { ObjectId } from 'mongodb';
 export const runtime = 'nodejs';
 type Context = { params: Promise<{ id: string }> };
@@ -10,7 +10,7 @@ export async function GET(_: Request, { params }: Context) {
   const db = await database(); const event = await db.collection('events').findOne({ _id: id, ...accessibleListing(await sessionUser()) }, { projection: { ownerId: 0 } });
   if (!event) return NextResponse.json({ error: 'Event not found' }, { status: 404 });
   const registrationCount = await db.collection('registrations').countDocuments({ eventId: id });
-  return NextResponse.json({ ...event, _id: String(event._id), registrationCount });
+  return NextResponse.json(serializeEvent(event, registrationCount));
 }
 export async function PATCH(req: Request, { params }: Context) {
   const user = await sessionUser(); if (!user) return unauthorized();

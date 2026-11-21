@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { publicListings } from '@/lib/common';
 import { database } from '@/lib/db';
-import { approximatePoint, kilometers, type Point } from '@/lib/event-location';
+import { approximatePoint, kilometers, venueName, type Point } from '@/lib/event-location';
 import { findEvents } from '@/lib/event-search';
 import type { EventData } from '@/lib/client';
 
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       .sort({ startsAt: 1 }).limit(100).toArray();
     const events = listings.map(event => ({
       _id: String(event._id), title: String(event.title), description: String(event.description ?? '').slice(0, 300),
-      location: String(event.location), startsAt: new Date(event.startsAt).toISOString(), category: String(event.category),
+      location: venueName(String(event.location)), startsAt: new Date(event.startsAt).toISOString(), category: String(event.category),
       capacity: Number(event.capacity), registrationCount: 0,
     })) satisfies EventData[];
     const latest = messages.at(-1)!.text;

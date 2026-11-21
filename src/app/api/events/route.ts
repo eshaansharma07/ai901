@@ -18,7 +18,7 @@ export async function GET(req: Request) {
       { $addFields: { registrationCount: { $size: '$registrations' } } },
       { $project: { registrations: 0, ownerId: 0 } },
     ]).toArray();
-    return NextResponse.json(events.map(e => ({ ...e, _id: String(e._id) })));
+    return NextResponse.json(events.map(event => serializeEvent(event, event.registrationCount)));
   } catch { return NextResponse.json({ error: 'Unable to load events' }, { status: 500 }); }
 }
 export async function POST(req: Request) {

@@ -1,3 +1,4 @@
+import { venueName } from '@/lib/event-location';
 import { NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { database, ensureIndexes } from '@/lib/db';
@@ -34,7 +35,7 @@ export async function POST(req: Request, { params }: Context) {
     }
 
     const emailStatus = event.demoExpiresAt ? 'demo' : await sendTicketEmail({
-      ...parsed.data, ticket, title: String(event.title), location: String(event.location),
+      ...parsed.data, ticket, title: String(event.title), location: venueName(String(event.location)),
       startsAt: new Date(event.startsAt), demo: /^demo · /i.test(String(event.title)),
     });
     return NextResponse.json({ ticket, eventTitle: event.title, name: parsed.data.name, emailStatus }, { status: 201 });

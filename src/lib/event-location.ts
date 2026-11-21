@@ -50,7 +50,6 @@ const cityAliases: Record<string, string> = {
   bangalore: 'Bengaluru',
   'new delhi': 'Delhi',
   'chandigarh university': 'Chandigarh',
-  'chandugarh university': 'Chandigarh',
   gurgaon: 'Gurugram',
   mysore: 'Mysuru',
   pondicherry: 'Puducherry',
@@ -63,8 +62,12 @@ function knownCity(value: string) {
   return cityNames.get(key) ?? (Object.hasOwn(cityAliases, key) ? cityAliases[key] : undefined);
 }
 
+export function venueName(location: string) {
+  return location.replace(/\bchandugarh university\b/gi, 'Chandigarh University');
+}
+
 export function eventCity(location: string) {
-  const parts = location.split('·')[0].split(',').map(part => part.trim());
+  const parts = venueName(location).split('·')[0].split(',').map(part => part.trim());
   for (const part of [...parts].reverse()) {
     const city = knownCity(part);
     if (city) return city;
