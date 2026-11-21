@@ -1,3 +1,4 @@
+import EventIQBrand from '@/components/EventIQBrand';
 import Link from 'next/link';
 import LandingMotion from '@/components/LandingMotion';
 import NearbyEvents from '@/components/NearbyEvents';
@@ -39,14 +40,12 @@ function DashboardPreview() {
   </div>;
 }
 
-function Brand() {
-  return <Link href="/" className="launch-brand"><span><CalendarDays size={19} aria-hidden="true"/></span>EventIQ<span className="launch-ai"> AI</span></Link>;
-}
+
 
 export default function Home() {
   return <LandingMotion>
     <header className="launch-header launch-wrap">
-      <Brand/>
+      <EventIQBrand className="launch-brand" />
       <nav aria-label="Main navigation" className="launch-nav">
         <Link href="/events">Find an event</Link>
         <Link href="/dashboard" className="launch-outline">Host an event <ArrowUpRight size={15}/></Link>
@@ -137,6 +136,6 @@ export default function Home() {
         </div>
       </section>
     </main>
-    <footer className="launch-footer launch-wrap"><Brand/><Link href="/events">Explore events <ArrowUpRight size={15}/></Link></footer>
+    <footer className="launch-footer launch-wrap"><EventIQBrand className="launch-brand" /><Link href="/events">Explore events <ArrowUpRight size={15}/></Link></footer>
   </LandingMotion>;
 }

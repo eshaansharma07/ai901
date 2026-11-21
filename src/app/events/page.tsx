@@ -1,5 +1,6 @@
 'use client';
 
+import EventIQBrand from '@/components/EventIQBrand';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, CalendarDays, Clock3, MapPin, Sparkles, LocateFixed } from 'lucide-react';
@@ -35,7 +36,7 @@ export default function Events() {
   const upcoming = findEvents(events, query, selectedPlace, location?.point, location?.city);
 
   return <main className="content public-flow">
-    <div className="toprow"><Link href="/" className="brand" style={{margin:0}}>EventIQ AI</Link><Link href="/dashboard" className="btn-light">Host an event</Link></div>
+    <div className="toprow"><EventIQBrand /><Link href="/dashboard" className="btn-light">Host an event</Link></div>
     <section className="finder-hero" aria-labelledby="finder-title">
       <span className="ai-label"><Sparkles size={16}/> EventIQ AI Finder</span>
       <h1 className="headline" id="finder-title">Find your kind of event.</h1>

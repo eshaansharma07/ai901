@@ -1,5 +1,6 @@
 'use client';
 
+import EventIQBrand from '@/components/EventIQBrand';
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { ArrowRight, CalendarDays, FlaskConical } from 'lucide-react';
@@ -37,9 +38,9 @@ export default function Login() {
   }
 
   return <main className="auth public-flow">
-    <Link href="/" className="brand" style={{ display: 'block' }}>EventIQ AI.</Link>
+    <EventIQBrand className="auth-brand" />
     <div className="card">
-      <div style={{ color: '#c8a6ff' }}><CalendarDays size={32}/></div>
+      <div style={{ color: '#e8e5df' }}><CalendarDays size={32}/></div>
       <h1 className="headline">{mode === 'signup' ? 'Create an organizer account' : 'Welcome back'}</h1>
       <p className="muted tiny" style={{ marginBottom: 24 }}>Manage events, registrations, and check-ins.</p>
       <form onSubmit={submit}>
@@ -52,7 +53,7 @@ export default function Login() {
       </form>
       <p className="muted tiny" style={{ textAlign: 'center', marginTop: 22 }}>
         {mode === 'signup' ? 'Already have an account?' : 'New to EventIQ?'}{' '}
-        <button type="button" style={{ color: '#d3b4ff', fontWeight: 800 }} onClick={() => {
+        <button type="button" style={{ color: '#f7f4ec', fontWeight: 800 }} onClick={() => {
           setMode(mode === 'signup' ? 'login' : 'signup');
           setError('');
           if (demoFilled) { setEmail(''); setPassword(''); setDemoFilled(false); }

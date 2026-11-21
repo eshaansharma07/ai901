@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import EventIQBrand from '@/components/EventIQBrand';
 import QRCode from 'qrcode';
 import { CalendarDays, MapPin, Users, Clock3, Copy, CheckCircle2, Printer } from 'lucide-react';
 import { api, post, dateLabel, type EventData } from '@/lib/client';
@@ -53,7 +54,7 @@ export default function EventDetail() {
   const started = !!event && new Date(event.startsAt) <= new Date();
 
   return <main className="content public-flow ticket-page">
-    <div className="toprow ticket-page-nav"><Link href="/" className="brand" style={{ margin: 0 }}>EventIQ AI</Link><Link href="/events" className="btn-light">← All events</Link></div>
+    <div className="toprow ticket-page-nav"><EventIQBrand /><Link href="/events" className="btn-light">← All events</Link></div>
     <div className="center" style={{ maxWidth: 750 }}>
       {!event ? <div className="card">{error || 'Loading event…'}</div> : registration ?
         <>
