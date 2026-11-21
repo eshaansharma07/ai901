@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, CalendarDays, Clock3, MapPin, Sparkles, LocateFixed } from 'lucide-react';
 import { api, dateLabel, type EventData } from '@/lib/client';
-import { eventCity as placeName } from '@/lib/event-location';
+import { cityOptions, eventCity } from '@/lib/event-location';
 import { findEvents } from '@/lib/event-search';
 import EventChat from '@/components/EventChat';
 import EventDirections from '@/components/EventDirections';
@@ -26,12 +26,12 @@ export default function Events() {
     setQuery(initial);
     let saved = '';
     try { saved = localStorage.getItem('eventiq-city') ?? ''; } catch {}
-    if (saved) setSelectedPlace(saved);
+    if (saved) setSelectedPlace(eventCity(saved));
     else void locate();
     api<EventData[]>('/api/events?upcoming=1').then(setEvents).catch(error => setError(error.message)).finally(() => setLoading(false));
   }, []);
 
-  const places = [...new Set(events.map(event => placeName(event.location)))].filter(Boolean).sort();
+  const places = cityOptions(events.map(event => event.location));
   const upcoming = findEvents(events, query, selectedPlace, location?.point, location?.city);
 
   return <main className="content public-flow">

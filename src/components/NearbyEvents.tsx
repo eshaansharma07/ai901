@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, ArrowUpRight, CalendarDays, LocateFixed, MapPin } from 'lucide-react';
 import { api, dateLabel, type EventData } from '@/lib/client';
 
-import { approximatePoint, eventCity, kilometers, sameCity } from '@/lib/event-location';
+import { approximatePoint, cityOptions, eventCity, kilometers, sameCity } from '@/lib/event-location';
 import { useEventLocation } from '@/lib/use-event-location';
 import EventChat from '@/components/EventChat';
 
@@ -20,7 +20,7 @@ export default function NearbyEvents() {
   useEffect(() => {
     let saved = '';
     try { saved = localStorage.getItem('eventiq-city') ?? ''; } catch {}
-    if (saved) setCity(saved);
+    if (saved) setCity(eventCity(saved));
     else void locate();
     const request = new AbortController();
     api<EventData[]>('/api/events?upcoming=1', { signal: request.signal })
@@ -45,7 +45,7 @@ export default function NearbyEvents() {
     }
   }
 
-  const citiesWithEvents = [...new Set(events.map(event => eventCity(event.location)))].filter(Boolean).sort();
+  const cities = cityOptions(events.map(event => event.location));
   const ranked = point ? events.flatMap(event => {
     const city = approximatePoint(event.location);
     if (!city) return [];
@@ -90,8 +90,8 @@ export default function NearbyEvents() {
       <label htmlFor="nearby-city">City</label>
       <select id="nearby-city" value={city} onChange={event => chooseCity(event.target.value)}>
         <option value="">All cities</option>
-        {city && !citiesWithEvents.includes(city) && <option value={city}>{city}</option>}
-        {citiesWithEvents.map(value => <option key={value} value={value}>{value}</option>)}
+        {city && !cities.includes(city) && <option value={city}>{city}</option>}
+        {cities.map(value => <option key={value} value={value}>{value}</option>)}
       </select>
       <button className="nearby-location" type="button" onClick={useLocation} disabled={locationState === 'checking'}><LocateFixed size={15}/> {locationState === 'checking' ? 'Locating…' : 'Use my location'}</button>
     </div>
