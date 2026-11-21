@@ -51,6 +51,7 @@ export default function EventPlanner({ apply }: { apply: (draft: PlannerDraft) =
   }
 
   return <section className="card planner-draft" aria-label="Gemini event planner">
+    <h3 className="planner-heading"><Sparkles size={19} /> Gemini planner</h3>
     <div className="field">
       <label htmlFor="planning-brief">Describe your event</label>
       <textarea id="planning-brief" maxLength={1500} value={brief} disabled={!!status}
@@ -72,9 +73,12 @@ export default function EventPlanner({ apply }: { apply: (draft: PlannerDraft) =
       <p className="muted tiny">{draft.revisionNote}</p>
       <details open><summary>Agenda</summary>
         {agendaNotice && <p className="muted tiny">{agendaNotice}</p>}
-        <ol>{draft.agenda.map((slot, index) => <li key={index}>
-          <strong>Day {slot.day} · {slot.time}</strong> · {slot.activity} ({slot.minutes} min)
-        </li>)}</ol>
+        {[...new Set(draft.agenda.map(slot => slot.day))].map(day => <section className="agenda-day" key={day}>
+          <h4>Day {day}</h4>
+          <ol className="agenda-timeline">{draft.agenda.filter(slot => slot.day === day).map((slot, index) => <li key={index}>
+            <time>{slot.time}</time><span>{slot.activity}<small>{slot.minutes} min</small></span>
+          </li>)}</ol>
+        </section>)}
       </details>
       <details><summary>Organizer checklist · {completed.length}/{draft.checklist.length}</summary>
         <ul>{draft.checklist.map((item, index) => <li key={index}><label>

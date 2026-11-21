@@ -597,3 +597,129 @@ body:has(.public-flow) { background: radial-gradient(ellipse at 68% 0%, #2b1746,
 .planner-result li + li { margin-top: 6px; }
 .planner-result .links { flex-wrap: wrap; }
 .planner-result .btn-light { text-align: start; white-space: normal; }
+
+.workspace .event-studio-back {
+  background: #090813b8;
+  backdrop-filter: blur(10px);
+}
+.workspace .event-studio {
+  width: min(1120px, 100%);
+  max-height: calc(100dvh - 40px);
+  padding: 0;
+  border: 1px solid #a292d54d;
+  border-radius: 26px;
+  background: #12101c;
+  color-scheme: dark;
+  box-shadow: 0 30px 100px #0009;
+  overscroll-behavior: contain;
+}
+.event-studio-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: clamp(18px, 4vw, 36px);
+  background: radial-gradient(ellipse at 90% -65%, #bb4774aa, transparent 70%),
+              radial-gradient(ellipse at 15% 0%, #6540a4, transparent 73%), #221733;
+  border-bottom: 1px solid #d4bbfc30;
+}
+.event-studio-header h2 {
+  flex: 1;
+  font-size: clamp(25px, 4vw, 46px);
+  font-weight: 800;
+  letter-spacing: -.055em;
+  line-height: 1.06;
+}
+.event-studio-icon, .event-studio-close {
+  display: grid;
+  flex: none;
+  place-items: center;
+  border: 1px solid #ffffff38;
+}
+.event-studio-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 17px;
+  background: linear-gradient(145deg, #dab9ff, #946be5);
+  color: #23143a;
+  box-shadow: 0 8px 25px #b185ff45;
+}
+.event-studio-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #100a2266;
+  transition: background .2s;
+}
+.event-studio-close:hover { background: #ffffff28; }
+.event-studio-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  padding: clamp(14px, 3vw, 28px);
+}
+.event-studio-grid.is-editing { grid-template-columns: minmax(0, 1fr); }
+.workspace .event-studio .planner-draft, .event-studio-form {
+  min-width: 0;
+  margin: 0;
+  padding: clamp(16px, 2vw, 24px);
+  border: 1px solid #c0acf52e;
+  border-radius: 20px;
+}
+.workspace .event-studio .planner-draft {
+  background: radial-gradient(ellipse at 0 0, #492c71aa, transparent 410px), #1d172b;
+}
+.event-studio-form { background: #1a1624; }
+.planner-heading, .event-studio-form h3 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 18px;
+  font-weight: 750;
+  margin-bottom: 18px;
+}
+.planner-heading svg { color: #e2b7ff; }
+.workspace .event-studio .field :is(input, textarea, select) {
+  min-width: 0;
+  background: #100d19;
+  border-color: #cbb4ff43;
+}
+.workspace .event-studio .btn:not(:disabled) {
+  background: linear-gradient(110deg, #6c3bd6, #9046bc);
+  box-shadow: 0 5px 22px #854ce847;
+  transition: filter .2s, transform .2s;
+}
+.event-studio .btn:not(:disabled):hover { filter: brightness(1.15); transform: translateY(-1px); }
+.event-studio-publish { width: 100%; }
+.event-studio .planner-result { overflow-wrap: anywhere; }
+.event-studio .planner-result h3 { font-size: clamp(22px, 3vw, 34px); letter-spacing: -.045em; line-height: 1.1; }
+.agenda-day { margin-top: 16px; }
+.agenda-day h4 { color: #e0c8ff; font-size: 13px; font-weight: 750; }
+.planner-result .agenda-timeline { padding: 0; list-style: none; }
+.agenda-timeline li {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 9px 10px;
+  background: #ffffff08;
+  border-radius: 9px;
+}
+.agenda-timeline time { color: #b0f4e8; font-variant-numeric: tabular-nums; font-weight: 700; }
+.agenda-timeline small { display: block; color: #cdbfdd; }
+@media (min-width: 851px) {
+  .event-studio-form { position: sticky; top: 16px; }
+  .event-studio-grid.is-editing .event-studio-form { max-width: 660px; width: 100%; margin-inline: auto; }
+}
+@media (max-width: 850px) {
+  .event-studio-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 500px) {
+  .workspace .event-studio-back { padding: 8px; }
+  .workspace .event-studio { max-height: calc(100dvh - 16px); border-radius: 18px; }
+  .event-studio-icon { width: 42px; height: 42px; border-radius: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace .event-studio { animation: none; }
+  .event-studio .btn, .event-studio-close { transition: none; }
+}
