@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sessionUser, unauthorized } from '@/lib/auth';
 import { database } from '@/lib/db';
-import { plannerSchema, validAgenda } from '@/lib/planner-schema';
+import { plannerSchema, resolveAgenda } from '@/lib/planner-schema';
 import { z } from 'zod';
 
 export const runtime = 'nodejs';
@@ -18,7 +18,7 @@ const instructions = [
   'You are the EventIQ organizer planner. Create a practical draft tailored to the user’s brief.',
   'For a revision, update the previous draft using the revision request. Preserve stated constraints and unrelated decisions.',
   'Use venue and capacity only when supplied by the user, otherwise use empty location and null capacity. Do not claim bookings, prices, approvals, or venue facts.',
-  'Provide a chronological agenda for each requested event day, within the stated hours, including transitions and breaks as appropriate. Use local 24-hour times and avoid overlaps.',
+  'Provide a chronological agenda for each requested event day, within the stated hours, including transitions and breaks as appropriate. Use local 24-hour times and avoid overlaps. Use the specified start time and label an unspecified end time as an assumption. Use a single timeline with no parallel sessions.',
   'State any assumptions about schedule, venue, budget, or staffing. Give concrete checklist tasks with suggested roles and risks with mitigations.',
   'Offer brief actionable follow-up requests that would improve this specific plan. Use revisionNote to explain meaningful changes or summarize the initial plan.',
   'Write the description as public listing copy. Keep operational details in the other sections.',
@@ -65,10 +65,8 @@ export async function POST(request: Request) {
       ?.filter((part: { thought?: boolean }) => !part.thought)
       .map((part: { text?: string }) => part.text ?? '').join('');
     const plan = plannerSchema.parse(JSON.parse(content ?? ''));
-    if (!validAgenda(plan.agenda)) {
-      return NextResponse.json({ error: 'Gemini returned an overlapping or out-of-order schedule. Try again with the event hours in your brief.' }, { status: 502 });
-    }
-    return NextResponse.json({ plan });
+    const { agenda, notice } = resolveAgenda(plan.agenda);
+    return NextResponse.json({ plan: { ...plan, agenda }, agendaNotice: notice });
   } catch {
     return NextResponse.json({ error: 'Gemini couldn’t finish this plan. Try again in a moment.' }, { status: 502 });
   }

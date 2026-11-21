@@ -15,6 +15,7 @@ export default function EventPlanner({ apply }: { apply: (draft: PlannerDraft) =
   const [completed, setCompleted] = useState<number[]>([]);
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
+  const [agendaNotice, setAgendaNotice] = useState('');
   const [applied, setApplied] = useState(false);
   const pending = useRef<AbortController | null>(null);
   const result = useRef<HTMLHeadingElement>(null);
@@ -29,7 +30,7 @@ export default function EventPlanner({ apply }: { apply: (draft: PlannerDraft) =
     setApplied(false);
     setStatus(change ? 'Gemini is revising your plan…' : 'Gemini is building your plan…');
     try {
-      const { plan } = await api<{ plan: PlannerDraft }>('/api/ai/plan', {
+      const { plan, agendaNotice } = await api<{ plan: PlannerDraft; agendaNotice: string }>('/api/ai/plan', {
         method: 'POST',
         body: JSON.stringify(change ? { prompt, previous: draft, revision: change } : { prompt }),
         signal: request.signal,
@@ -37,6 +38,7 @@ export default function EventPlanner({ apply }: { apply: (draft: PlannerDraft) =
       if (request.signal.aborted) return;
       setOriginal(prompt);
       setDraft(plan);
+      setAgendaNotice(agendaNotice);
       setCompleted([]);
       setRevision('');
       requestAnimationFrame(() => result.current?.focus());
@@ -69,6 +71,7 @@ export default function EventPlanner({ apply }: { apply: (draft: PlannerDraft) =
       <p>{draft.description}</p>
       <p className="muted tiny">{draft.revisionNote}</p>
       <details open><summary>Agenda</summary>
+        {agendaNotice && <p className="muted tiny">{agendaNotice}</p>}
         <ol>{draft.agenda.map((slot, index) => <li key={index}>
           <strong>Day {slot.day} · {slot.time}</strong> · {slot.activity} ({slot.minutes} min)
         </li>)}</ol>
