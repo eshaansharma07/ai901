@@ -20,9 +20,8 @@ Connect the GitHub repository to a Vercel project and use `main` as the producti
 | Feature | Server-side variables |
 | --- | --- |
 | Database and organizer authentication | `MONGODB_URI`, `AUTH_SECRET`, optional `MONGODB_DB` |
-| Gemini event chat | `GEMINI_API_KEY` |
+| Gemini event chat and organizer planner | `GEMINI_API_KEY` |
 | Ticket email via Gmail | `TICKET_GMAIL_ADDRESS`, `TICKET_GMAIL_APP_PASSWORD` |
 | Ticket email via Resend | `RESEND_API_KEY`, `TICKET_EMAIL_FROM` |
-| Optional cloud organizer planning | `AI_API_KEY`, optional `AI_BASE_URL` and `AI_MODEL` |
 
-The organizer planner also supports an on-device model. Ticket registration produces a QR ticket on the site even if email delivery is unavailable.
+The organizer planner supports follow-up revisions and lets you apply a reviewed listing to the event form. Ticket registration produces a QR ticket on the site even if email delivery is unavailable.
