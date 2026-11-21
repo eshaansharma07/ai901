@@ -751,3 +751,33 @@ body:has(.public-flow) { background: radial-gradient(ellipse at 68% 0%, #252525,
   .eventiq-brand { font-size: 1.25rem; }
   .eventiq-brand img { width: 33px; height: 33px; }
 }
+
+/* Accent colors for interactive and illustrated elements. */
+:root {
+  --eventiq-champagne: #dfc49c;
+  --eventiq-slate-blue: #a6bed2;
+}
+.launch-copy em {
+  background-image: linear-gradient(105deg, #fbf7ed, var(--eventiq-champagne) 55%, #f3eee6 92%);
+}
+.hero-object-ticket {
+  background: linear-gradient(134deg, #fbf2e2, #d9bd92 50%, #9c8061);
+}
+.hero-object-pin {
+  background: linear-gradient(140deg, #eaf1f6, var(--eventiq-slate-blue) 60%, #718ba0);
+}
+.hero-object-spark {
+  background: linear-gradient(145deg, #f8f1e6, #dac5a7 70%, #b19b7e);
+}
+.launch-primary, .launch-primary:hover {
+  background: linear-gradient(110deg, #f7f4ec, #e5d3b6);
+}
+.ai-label, .planner-heading svg { color: var(--eventiq-champagne); }
+.nearby-location:not(:disabled), .agenda-timeline time { color: var(--eventiq-slate-blue); }
+.nearby-card-top { color: var(--eventiq-champagne); }
+.nearby-rail li:nth-child(even) .nearby-card-top { color: var(--eventiq-slate-blue); }
+.nearby-card:hover { border-color: var(--eventiq-champagne); }
+.event-chat-launch {
+  background: linear-gradient(110deg, #eef2f4, var(--eventiq-slate-blue));
+  color: #15191d;
+}
