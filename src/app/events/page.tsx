@@ -32,7 +32,7 @@ export default function Events() {
   }, []);
 
   const places = [...new Set(events.map(event => placeName(event.location)))].filter(Boolean).sort();
-  const upcoming = findEvents(events, query, selectedPlace, location?.point);
+  const upcoming = findEvents(events, query, selectedPlace, location?.point, location?.city);
 
   return <main className="content public-flow">
     <div className="toprow"><Link href="/" className="brand" style={{margin:0}}>EventIQ AI</Link><Link href="/dashboard" className="btn-light">Host an event</Link></div>
@@ -53,15 +53,16 @@ export default function Events() {
         <label htmlFor="finder-place" className="sr-only">Filter by location</label>
         <select id="finder-place" value={selectedPlace} onChange={event => { clearLocation(); setSelectedPlace(event.target.value); try { if (event.target.value) localStorage.setItem('eventiq-city', event.target.value); else localStorage.removeItem('eventiq-city'); } catch {} }}>
           <option value="">All locations</option>
+          {selectedPlace && !places.includes(selectedPlace) && <option>{selectedPlace}</option>}
           {places.map(place => <option key={place}>{place}</option>)}
         </select>
-        <button className="btn-light" onClick={async () => { if (await locate()) { setSelectedPlace(''); try { localStorage.removeItem('eventiq-city'); } catch {} } }} disabled={locationState === 'checking'}><LocateFixed size={16}/> {locationState === 'checking' ? 'Locating…' : 'Use my location'}</button>
+        <button className="btn-light" onClick={async () => { if (await locate(true)) { setSelectedPlace(''); try { localStorage.removeItem('eventiq-city'); } catch {} } }} disabled={locationState === 'checking'}><LocateFixed size={16}/> {locationState === 'checking' ? 'Locating…' : 'Use my location'}</button>
         {(query || selectedPlace || location) && <button className="btn-light" onClick={() => { setSearch(''); setQuery(''); setSelectedPlace(''); clearLocation(); try { localStorage.removeItem('eventiq-city'); } catch {} }}>Clear filters</button>}
       </div>
     </div>
     <div aria-live="polite">
       {locationState === 'unavailable' && <p className="muted tiny">Location couldn’t be detected. Choose a city to filter the events.</p>}
-      {location && <p className="muted tiny finder-location-note">{location.source === 'network' ? 'Approximate location' + (location.city ? ': ' + location.city : '') + '.' : 'Using your device location.'} Events with similar relevance are ordered by distance where available.</p>}
+      {location && <p className="muted tiny finder-location-note">{location.source === 'network' ? 'Approximate location' + (location.city ? ': ' + location.city : '') + '.' : 'Device location (accuracy ~' + Math.ceil(location.accuracy) + ' m).'} Events with similar relevance are ordered by distance where available.</p>}
       {error && <p className="error" role="alert">{error}</p>}
       {loading && <p>Loading events…</p>}
       {!loading && !error && !upcoming.length && <div className="card empty">

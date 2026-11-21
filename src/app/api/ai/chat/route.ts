@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { publicListings } from '@/lib/common';
 import { database } from '@/lib/db';
 import { approximatePoint, kilometers, type Point } from '@/lib/event-location';
 import { findEvents } from '@/lib/event-search';
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
     const db = await database();
     const now = new Date();
     const point = networkPoint(request);
-    const listings = await db.collection('events').find({ published: true, startsAt: { $gt: now } }, { projection: publicEventFields })
+    const listings = await db.collection('events').find({ ...publicListings, startsAt: { $gt: now } }, { projection: publicEventFields })
       .sort({ startsAt: 1 }).limit(100).toArray();
     const events = listings.map(event => ({
       _id: String(event._id), title: String(event.title), description: String(event.description ?? '').slice(0, 300),

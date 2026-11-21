@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { database } from '@/lib/db';
-import { demoReadOnly, sessionUser, unauthorized } from '@/lib/auth';
+import { sessionUser, unauthorized } from '@/lib/auth';
 import { objectId } from '@/lib/common';
 import { ObjectId } from 'mongodb';
 import { z } from 'zod';
@@ -8,7 +8,6 @@ export const runtime = 'nodejs';
 type Context = { params: Promise<{ id: string }> };
 export async function POST(req: Request, { params }: Context) {
   const user = await sessionUser(); if (!user) return unauthorized();
-  if (user.demo) return demoReadOnly();
   const id = objectId((await params).id); if (!id) return NextResponse.json({ error: 'Invalid event' }, { status: 400 });
   const parsed = z.object({ ticket: z.string().uuid() }).safeParse(await req.json());
   if (!parsed.success) return NextResponse.json({ error: 'Invalid ticket' }, { status: 400 });

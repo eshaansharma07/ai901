@@ -57,7 +57,7 @@ export default function EventDetail() {
     <div className="center" style={{ maxWidth: 750 }}>
       {!event ? <div className="card">{error || 'Loading event…'}</div> : registration ?
         <>
-          <div className="ticket-confirmation" role="status"><CheckCircle2 size={22}/><div><strong>You’re registered</strong><p>{registration.emailStatus === 'sent' ? `Confirmation email sent to ${email}.` : 'Email delivery is unavailable for this registration. Save your ticket below.'}</p></div></div>
+          <div className="ticket-confirmation" role="status"><CheckCircle2 size={22}/><div><strong>You’re registered</strong><p>{registration.emailStatus === 'sent' ? `Confirmation email sent to ${email}.` : registration.emailStatus === 'demo' ? 'Your demo ticket is ready below.' : 'Email delivery is unavailable for this registration. Save your ticket below.'}</p></div></div>
           <article className="admission-ticket" aria-label="Your event ticket">
             <header><span>EventIQ AI</span><span>{demo ? 'Demo pass' : 'Admission pass'}</span><h1>{event.title}</h1></header>
             <dl>

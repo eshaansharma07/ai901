@@ -40,7 +40,7 @@ export default function Login() {
     <Link href="/" className="brand" style={{ display: 'block' }}>EventIQ AI.</Link>
     <div className="card">
       <div style={{ color: '#c8a6ff' }}><CalendarDays size={32}/></div>
-      <h1 className="headline">{mode === 'signup' ? 'Create your workspace' : 'Welcome back'}</h1>
+      <h1 className="headline">{mode === 'signup' ? 'Create an organizer account' : 'Welcome back'}</h1>
       <p className="muted tiny" style={{ marginBottom: 24 }}>Manage events, registrations, and check-ins.</p>
       <form onSubmit={submit}>
         <div className="field"><label htmlFor="login-email">Email address</label><input id="login-email" type="email" autoComplete="username" required value={email} onChange={event => { setEmail(event.target.value); setDemoFilled(false); }} placeholder="you@example.com"/></div>
@@ -48,7 +48,7 @@ export default function Login() {
         {error && <p className="error" role="alert">{error}</p>}
         <button className="btn" disabled={busy} style={{ width: '100%' }}>{busy ? 'Please wait…' : mode === 'signup' ? 'Create account' : 'Sign in'}<ArrowRight size={17}/></button>
         <button className="btn-light demo-fill" type="button" onClick={fillDemo} disabled={busy}><FlaskConical size={17}/>Fill demo details</button>
-        {demoFilled && <p className="muted tiny demo-fill-note" role="status">Demo details filled. Select Sign in to open the public workspace.</p>}
+        {demoFilled && <p className="muted tiny demo-fill-note" role="status">Demo details filled. Select Sign in to open your private demo workspace.</p>}
       </form>
       <p className="muted tiny" style={{ textAlign: 'center', marginTop: 22 }}>
         {mode === 'signup' ? 'Already have an account?' : 'New to EventIQ?'}{' '}
@@ -56,7 +56,7 @@ export default function Login() {
           setMode(mode === 'signup' ? 'login' : 'signup');
           setError('');
           if (demoFilled) { setEmail(''); setPassword(''); setDemoFilled(false); }
-        }}>{mode === 'signup' ? 'Sign in' : 'Create account'}</button>
+        }}>{mode === 'signup' ? 'Sign in' : 'Create organizer account'}</button>
       </p>
     </div>
     <p style={{ textAlign: 'center', marginTop: 20 }}><Link className="muted tiny" href="/events">Browse public events →</Link></p>

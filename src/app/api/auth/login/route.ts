@@ -6,7 +6,7 @@ import { ObjectId } from 'mongodb';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 export const runtime = 'nodejs';
-const schema = z.object({ email: z.email().transform(v => v.toLowerCase().trim()), password: z.string().min(8).max(128), mode: z.enum(['login', 'signup']) });
+const schema = z.object({ email: z.string().trim().toLowerCase().pipe(z.email()), password: z.string().min(8).max(128), mode: z.enum(['login', 'signup']) });
 export async function POST(req: Request) {
   try {
     const parsed = schema.safeParse(await req.json());
@@ -26,7 +26,12 @@ export async function POST(req: Request) {
       if (user) return NextResponse.json({ error: 'Account already exists' }, { status: 409 });
       const passwordHash = await bcrypt.hash(password, 12);
       try { const result = await users.insertOne({ email, passwordHash, createdAt: new Date() }); user = { _id: result.insertedId, email, passwordHash }; }
-      catch { return NextResponse.json({ error: 'Account already exists' }, { status: 409 }); }
+      catch (error) {
+        if (typeof error === 'object' && error && 'code' in error && error.code === 11000) {
+          return NextResponse.json({ error: 'Account already exists' }, { status: 409 });
+        }
+        throw error;
+      }
     } else if (!user || !(await bcrypt.compare(password, String(user.passwordHash)))) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }

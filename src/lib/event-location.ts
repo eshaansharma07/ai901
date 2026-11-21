@@ -26,3 +26,8 @@ export function kilometers(from: Point, to: Point) {
 export function eventCity(location: string) {
   return location.split('·')[0].split(',').at(-1)?.trim() ?? location;
 }
+
+export function sameCity(first: string, second: string) {
+  const normalize = (city: string) => city.trim().toLowerCase().replace(/^bangalore$/, 'bengaluru').replace(/^new delhi$/, 'delhi');
+  return normalize(first) === normalize(second);
+}

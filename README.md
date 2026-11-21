@@ -11,7 +11,7 @@ EventIQ AI is a Next.js and MongoDB Atlas platform for discovering events, organ
 3. Run `npm run dev` and open [localhost:3000](http://localhost:3000).
 4. Run `npm run build` to verify the production build.
 
-The sign-in page includes a public, read-only demo. Sign up with your own account to publish events and manage check-ins.
+The sign-in page includes a two-hour organizer demo with private test events and on-screen tickets. Create an organizer account to publish to the public catalogue.
 
 ## Deploy on Vercel
 

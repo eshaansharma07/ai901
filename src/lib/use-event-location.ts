@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/client';
 import type { Point } from '@/lib/event-location';
 
-type Location = { point: Point; source: 'device' | 'network'; city?: string };
+type Location =
+  | { source: 'device'; point: Point; accuracy: number; city?: undefined }
+  | { source: 'network'; point?: Point; city: string };
 
 async function granted() {
   try {
@@ -15,9 +17,9 @@ async function granted() {
 }
 
 function devicePoint(signal: AbortSignal) {
-  return new Promise<Point | null>(resolve => {
-    const timer = setTimeout(() => finish(null), 3000);
-    function finish(point: Point | null) {
+  return new Promise<Extract<Location, { source: 'device' }> | null>(resolve => {
+    const timer = setTimeout(() => finish(null), 10000);
+    function finish(point: Extract<Location, { source: 'device' }> | null) {
       clearTimeout(timer);
       signal.removeEventListener('abort', abort);
       resolve(point);
@@ -26,9 +28,9 @@ function devicePoint(signal: AbortSignal) {
     signal.addEventListener('abort', abort, { once: true });
     try {
       navigator.geolocation.getCurrentPosition(
-        ({ coords }) => finish([coords.latitude, coords.longitude]),
+        ({ coords }) => finish({ point: [coords.latitude, coords.longitude], accuracy: coords.accuracy, source: 'device' }),
         () => finish(null),
-        { enableHighAccuracy: false, timeout: 2700, maximumAge: 300000 },
+        { enableHighAccuracy: true, timeout: 9500, maximumAge: 0 },
       );
     } catch { finish(null); }
   });
@@ -51,22 +53,20 @@ export function useEventLocation() {
     setLocationState('idle');
   }
 
-  async function locate() {
+  async function locate(requestDevice = false) {
     if (request.current) return false;
     const controller = new AbortController();
     request.current = controller;
     const { signal } = controller;
     setLocationState('checking');
-    setLocation(null);
     try {
-      const permission = await Promise.race([granted(), new Promise<false>(resolve => setTimeout(() => resolve(false), 400))]);
-      const precise = permission && !signal.aborted ? await devicePoint(signal) : null;
-      let result: Location | null = precise ? { point: precise, source: 'device' } : null;
+      const permission = requestDevice || await Promise.race([granted(), new Promise<false>(resolve => setTimeout(() => resolve(false), 400))]);
+      let result: Location | null = permission && navigator.geolocation && !signal.aborted ? await devicePoint(signal) : null;
       if (!result && !signal.aborted) {
-        const approximate = await api<{ point: Point; city: string } | null>('/api/location', {
+        const approximate = await api<{ point: Point | null; city: string } | null>('/api/location', {
           signal: AbortSignal.any([signal, AbortSignal.timeout(4000)]),
         });
-        if (approximate) result = { ...approximate, source: 'network' };
+        if (approximate) result = { city: approximate.city, point: approximate.point ?? undefined, source: 'network' };
       }
       if (signal.aborted) return false;
       setLocation(result);

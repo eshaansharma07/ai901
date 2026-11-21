@@ -8,13 +8,13 @@ function key() {
   if (!secret || secret.length < 32) throw new Error('AUTH_SECRET must have at least 32 characters');
   return new TextEncoder().encode(secret);
 }
-export async function sessionUser(): Promise<{ id: string; email: string; demo: boolean } | null> {
+export async function sessionUser(): Promise<{ id: string; email: string; demo: boolean; expiresAt: Date } | null> {
   const token = (await cookies()).get(name)?.value;
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, key());
-    if (!payload.sub || !ObjectId.isValid(payload.sub) || typeof payload.email !== 'string') return null;
-    return { id: payload.sub, email: payload.email, demo: payload.demo === true };
+    if (!payload.sub || !ObjectId.isValid(payload.sub) || typeof payload.email !== 'string' || typeof payload.exp !== 'number') return null;
+    return { id: payload.sub, email: payload.email, demo: payload.demo === true, expiresAt: new Date(payload.exp * 1000) };
   } catch { return null; }
 }
 export async function loginCookie(id: string, email: string, demo = false) {
@@ -25,5 +25,3 @@ export async function loginCookie(id: string, email: string, demo = false) {
 }
 export async function logoutCookie() { (await cookies()).delete(name); }
 export function unauthorized() { return NextResponse.json({ error: 'Organizer login required' }, { status: 401 }); }
-
-export function demoReadOnly() { return NextResponse.json({ error: 'The public demo workspace is read-only. Sign in to your own account to publish or manage events.' }, { status: 403 }); }

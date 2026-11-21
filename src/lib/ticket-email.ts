@@ -10,7 +10,7 @@ type TicketEmail = {
   ticket: string;
   demo: boolean;
 };
-export type TicketEmailStatus = 'sent' | 'unavailable' | 'failed';
+export type TicketEmailStatus = 'sent' | 'unavailable' | 'failed' | 'demo';
 
 function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!);

@@ -14,3 +14,13 @@ export function fail(error: unknown) { return { error: error instanceof Error ? 
 export function serializeEvent(event: Record<string, unknown>, count = 0) {
   return { ...event, _id: String(event._id), ownerId: undefined, registrationCount: count };
 }
+
+export const publicListings = { published: true, demoExpiresAt: { $exists: false } };
+
+export function accessibleListing(user: { id: string; demo: boolean } | null) {
+  if (!user?.demo) return publicListings;
+  return { $or: [
+    publicListings,
+    { published: true, ownerId: new ObjectId(user.id), demoExpiresAt: { $gt: new Date() } },
+  ] };
+}

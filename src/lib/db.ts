@@ -13,6 +13,8 @@ export async function ensureIndexes() {
     db.collection('registrations').createIndex({ eventId: 1, email: 1 }, { unique: true }),
     db.collection('registrations').createIndex({ ticket: 1 }, { unique: true }),
     db.collection('events').createIndex({ startsAt: 1 }),
+    db.collection('events').createIndex({ demoExpiresAt: 1 }, { expireAfterSeconds: 0 }),
+    db.collection('registrations').createIndex({ demoExpiresAt: 1 }, { expireAfterSeconds: 0 }),
     db.collection('users').createIndex({ email: 1 }, { unique: true }),
   ]);
 }

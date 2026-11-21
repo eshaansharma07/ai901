@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, ArrowUpRight, CalendarDays, LocateFixed, MapPin } from 'lucide-react';
 import { api, dateLabel, type EventData } from '@/lib/client';
 
-import { approximatePoint, eventCity, kilometers } from '@/lib/event-location';
+import { approximatePoint, eventCity, kilometers, sameCity } from '@/lib/event-location';
 import { useEventLocation } from '@/lib/use-event-location';
 import EventChat from '@/components/EventChat';
 
@@ -39,7 +39,7 @@ export default function NearbyEvents() {
   }
 
   async function useLocation() {
-    if (await locate()) {
+    if (await locate(true)) {
       setCity('');
       try { localStorage.removeItem('eventiq-city'); } catch {}
     }
@@ -55,15 +55,19 @@ export default function NearbyEvents() {
   const nearby = ranked.filter(({ distance }) => distance <= 100);
   const cityEvents = city ? events.filter(event => eventCity(event.location) === city) : events;
   const listings = !city && ranked.length ? (nearby.length ? nearby : ranked) : cityEvents.map(event => ({ event, distance: null }));
-  const title = city ? 'Events in ' + city : nearby.length ? 'Events near you' : ranked.length ? 'Nearest upcoming events' : 'Upcoming events';
+  const detectedCity = !point && !city && location?.city;
+  const detectedListings = detectedCity ? listings.filter(({ event }) => sameCity(eventCity(event.location), detectedCity)) : [];
+  const displayed = detectedListings.length ? detectedListings : listings;
+  const title = detectedListings.length ? 'Events in ' + detectedCity : city ? 'Events in ' + city : nearby.length ? 'Events near you' : ranked.length ? 'Nearest upcoming events' : 'Upcoming events';
   const origin = location?.source === 'network'
     ? (location.city ? 'Approximate location: ' + location.city + '. ' : 'Using your approximate network location. ')
-    : 'Using your device location. ';
+    : location?.source === 'device' ? 'Device location (accuracy ~' + Math.ceil(location.accuracy) + ' m). ' : '';
   const locationMessage = locationState === 'checking' ? 'Checking your location…'
     : locationState === 'unavailable' ? 'Location couldn’t be detected. Choose a city to filter the events.'
     : city ? 'Showing upcoming events in your selected city.'
     : nearby.length ? origin + 'Distances are approximate and based on the event city.'
     : ranked.length ? origin + 'No listed events within 100 km. Showing the closest listings with known locations.'
+    : detectedListings.length ? origin + 'Showing listings in the detected city.'
     : location ? origin + 'Distances are unavailable for these listings.'
     : 'Find events near you or choose a city.';
 
@@ -96,7 +100,7 @@ export default function NearbyEvents() {
       !listings.length ? <p className="nearby-status">{city ? 'No upcoming events in this city. Choose another city or view all events.' : 'New events will appear here when published.'}</p> :
       <>
         <ul ref={rail} id="nearby-event-list" className="nearby-rail" aria-label={title}>
-          {listings.slice(0, 12).map(({ event, distance }) => <li key={event._id}>
+          {displayed.slice(0, 12).map(({ event, distance }) => <li key={event._id}>
             <Link className="nearby-card" href={`/events/${event._id}`}>
               <div className="nearby-card-top"><span>{event.category}</span><ArrowUpRight size={19}/></div>
               <h3>{event.title}</h3>
@@ -105,7 +109,7 @@ export default function NearbyEvents() {
             </Link>
           </li>)}
         </ul>
-        {listings.length > 1 && <div className="nearby-controls">
+        {displayed.length > 1 && <div className="nearby-controls">
           <button type="button" onClick={() => slide(-1)} aria-label="Previous events" aria-controls="nearby-event-list"><ArrowLeft size={19}/></button>
           <button type="button" onClick={() => slide(1)} aria-label="Next events" aria-controls="nearby-event-list"><ArrowRight size={19}/></button>
         </div>}

@@ -1,6 +1,6 @@
 import type { EventData } from '@/lib/client';
 import { inferEventIntent, words } from '@/lib/event-intent';
-import { approximatePoint, eventCity as placeName, kilometers, type Point } from '@/lib/event-location';
+import { approximatePoint, eventCity as placeName, kilometers, sameCity, type Point } from '@/lib/event-location';
 
 const filler = new Set(words('a an and are at can find for i in is me near on or please show some the to want with need looking events event this next today tomorrow weekend around anything something what there any summarize summary happening tell about whats where my local nearby help recommend directions route how get go i’d like would could'));
 
@@ -23,7 +23,7 @@ function matchesDate(query: string, startsAt: string, now: Date) {
   return day >= start && day < end;
 }
 
-export function findEvents(events: EventData[], query: string, selectedPlace: string, point?: Point) {
+export function findEvents(events: EventData[], query: string, selectedPlace: string, point?: Point, detectedCity = '') {
   const now = new Date();
   const queryWords = words(query);
   const normalizedQuery = ' ' + queryWords.join(' ') + ' ';
@@ -43,7 +43,7 @@ export function findEvents(events: EventData[], query: string, selectedPlace: st
       const description = words(event.description + ' ' + event.category);
       const score = terms.reduce((total, term) => total + (title.includes(term) || location.includes(term) ? 4 : description.includes(term) ? 1 : 0), Number(category === event.category));
       const venue = point && approximatePoint(event.location);
-      return { event, score, distance: point && venue ? kilometers(point, venue) : Infinity };
+      return { event, score, distance: point && venue ? kilometers(point, venue) : detectedCity && sameCity(placeName(event.location), detectedCity) ? 0 : Infinity };
     })
     .filter(({ score }) => !terms.length || score > 0)
     .sort((a, b) => b.score - a.score || a.distance - b.distance || Date.parse(a.event.startsAt) - Date.parse(b.event.startsAt))
